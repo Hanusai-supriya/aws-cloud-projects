@@ -1,0 +1,25 @@
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: This is first EC2 instance creation via CloudFormation
+
+Parameters:
+  SecurityGroupId:
+    Type: String
+    Description: Enter the security group ID
+
+Resources:
+  Myec2instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-002a6ae76416021fe
+      InstanceType: t3.micro
+
+      SecurityGroupIds:
+        - !Ref SecurityGroupId
+
+      Tags:
+        - Key: Environment
+          Value: Production
+
+      KeyName: hanu-prod-key
+

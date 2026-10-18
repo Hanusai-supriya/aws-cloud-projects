@@ -1,0 +1,32 @@
+name: TaskMaster-Pipeline
+
+# 1. Events / Triggers
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]   # Branch filtering
+
+jobs:
+  # 2. Parallel jobs
+  verify-linting:
+    runs-on: ubuntu-latest   # GitHub-hosted runner
+    steps:
+      - name: Fetch Codebase
+        uses: actions/checkout@v4   # Reusable marketplace action
+
+      - name: Validate HTML
+        run: npx --yes htmlhint@1.1.4 "site/**/*.html"
+
+  compile-application:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Codebase
+        uses: actions/checkout@v4
+
+      - name: Build Assets
+        run: |
+          mkdir dist
+          cp -r site/* dist/
+          sed -i "s/__COMMIT_SHA__/${GITHUB_SHA:0:7}/g" dist/index.html
+          sed -i "s/__BUILD_TIME__/$(date -u +%Y-%m-%dT%H:%M:%SZ)/g" dist/index.html
+          cat dist/index.html | grep -E "Build|sha"
